@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.collections.FXCollections?>
+
+<AnchorPane fx:id="mainpane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="671.0" prefWidth="1022.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <ToolBar fx:id="toprightbar" layoutX="817.0" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <items>
+                <ChoiceBox fx:id="choice01" prefWidth="150.0" value="Pen">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Pen" />
+                            <String fx:value="Eraser" />
+                            <String fx:value="Line" />
+                        </FXCollections>
+                    </items>
+
+                </ChoiceBox>
+                <ColorPicker fx:id="color01" />
+            </items>
+        </ToolBar>
+        <VBox alignment="CENTER" layoutY="80.0" prefHeight="700.0" prefWidth="36.0" AnchorPane.bottomAnchor="79.0" AnchorPane.topAnchor="80.0">
+            <children>
+                <Slider fx:id="slider1" min="1.0" orientation="VERTICAL" prefHeight="275.0" prefWidth="18.0" />
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="18.0" stroke="TRANSPARENT" strokeType="INSIDE" width="32.0" />
+                <Slider fx:id="slider2" orientation="VERTICAL" prefHeight="292.0" prefWidth="18.0" />
+            </children>
+        </VBox>
+        <AnchorPane fx:id="drawpane" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" prefHeight="749.0" prefWidth="926.0" style="-fx-border-color: #000000;" AnchorPane.bottomAnchor="48.0" AnchorPane.topAnchor="48.0">
+            <cursor>
+                <Cursor fx:constant="DEFAULT" />
+            </cursor>
+        </AnchorPane>
+        <ToolBar layoutX="234.0" prefHeight="44.0" prefWidth="454.0" AnchorPane.topAnchor="0.0">
+            <items>
+                <Button fx:id="topbtn1" mnemonicParsing="false" text="Button" />
+                <Button fx:id="topbtn2" mnemonicParsing="false" text="Button" />
+                <Button fx:id="topbtn3" mnemonicParsing="false" text="Button" />
+                <Button fx:id="topbtn4" mnemonicParsing="false" onMouseClicked="#printHello" text="Button" />
+            </items>
+        </ToolBar>
+        <MenuBar layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </children>
+</AnchorPane>
