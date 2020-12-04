@@ -28,7 +28,7 @@ public class Controller implements Initializable {
 
 
 
-    private Path currentPath;
+    private Path currentShape;
     private Point2D lastP; //拖动时来计算移动向量
 
 
@@ -90,21 +90,33 @@ public class Controller implements Initializable {
         });
     }
 
-    public void startFreeDraw(Path currentPath,double x,double y){
+    public void startFreeDraw(Path currentShape,double x,double y){
         MoveTo moveTo = new MoveTo(x,y);
 //        System.out.println("panexy:"+drawpane.getLayoutX()+"**"+drawpane.getLayoutY());
 //        System.out.println("moveto:"+moveTo.getX()+"**"+moveTo.getY());
-        this.currentPath = currentPath;
+        this.currentShape = currentShape;
+        this.currentShape.getElements().add(moveTo);
+        initShape(currentShape,x,y);
+    }
+    public void freeDrawing(double x,double y){
+        LineTo lineTo = new LineTo(x,y);
+        currentShape.getElements().add(lineTo);
+    }
+    public void endFreeDraw(){
+
+    }
+    
+
+    public void initShape(Shape currentShape,double x,double y){
         //初始化笔刷：
-        this.currentPath.getElements().add(moveTo);
-        this.currentPath.setStroke(color01.getValue());
-        this.currentPath.setStrokeWidth(slider1.getValue());
+        this.currentShape.setStroke(color01.getValue());
+        this.currentShape.setStrokeWidth(slider1.getValue());
         //添加到容器
-        drawpane.getChildren().add(this.currentPath);
+        drawpane.getChildren().add(this.currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动
         Translate translate = new Translate(0,0);
-        this.currentPath.getTransforms().add(translate);
-        this.currentPath.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2->{
+        this.currentShape.getTransforms().add(translate);
+        this.currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2->{
             if(e2.getButton()==MouseButton.MIDDLE)
             {
 
@@ -116,25 +128,18 @@ public class Controller implements Initializable {
                 translate.setY(translate.getY()+(e2.getSceneY()-lastP.getY()));
 
 //                Translate translate = new Translate(e2.getX()-lastP.getX(),e2.getY()-lastP.getY());
-//                this.currentPath.getTransforms().add(translate);
+//                this.currentShape.getTransforms().add(translate);
 
                 //记录坐标
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
         });
-        this.currentPath.addEventFilter(MouseEvent.MOUSE_PRESSED, e2->{
+        this.currentShape.addEventFilter(MouseEvent.MOUSE_PRESSED, e2->{
             if(e2.getButton()==MouseButton.MIDDLE)
             {
                 //必须用getScene坐标，如果用Shape自己的坐标会有卡顿的情况
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
         });
-    }
-    public void freeDrawing(double x,double y){
-        LineTo lineTo = new LineTo(x,y);
-        currentPath.getElements().add(lineTo);
-    }
-    public void endFreeDraw(){
-
     }
 }
