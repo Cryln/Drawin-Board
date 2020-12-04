@@ -23,6 +23,7 @@
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="Pen" />
                             <String fx:value="Eraser" />
+                            <String fx:value="Clear" />
                             <String fx:value="Line" />
                         </FXCollections>
                     </items>

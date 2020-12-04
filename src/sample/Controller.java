@@ -90,14 +90,16 @@ public class Controller implements Initializable {
         });
     }
 
-    public void startFreeDraw(Path currentShape,double x,double y){
+    //自由绘图
+    public void startFreeDraw(Path currentPath,double x,double y){
         MoveTo moveTo = new MoveTo(x,y);
 //        System.out.println("panexy:"+drawpane.getLayoutX()+"**"+drawpane.getLayoutY());
 //        System.out.println("moveto:"+moveTo.getX()+"**"+moveTo.getY());
-        this.currentShape = currentShape;
-        this.currentShape.getElements().add(moveTo);
-        initShape(currentShape,x,y);
+        this.currentShape = currentPath;
+        currentPath.getElements().add(moveTo);
+        initShape(x,y);
     }
+
     public void freeDrawing(double x,double y){
         LineTo lineTo = new LineTo(x,y);
         currentShape.getElements().add(lineTo);
@@ -105,23 +107,23 @@ public class Controller implements Initializable {
     public void endFreeDraw(){
 
     }
-    
 
-    public void initShape(Shape currentShape,double x,double y){
+
+    public void initShape(double x,double y){
         //初始化笔刷：
-        this.currentShape.setStroke(color01.getValue());
-        this.currentShape.setStrokeWidth(slider1.getValue());
+        currentShape.setStroke(color01.getValue());
+        currentShape.setStrokeWidth(slider1.getValue());
         //添加到容器
-        drawpane.getChildren().add(this.currentShape);
+        drawpane.getChildren().add(currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动
         Translate translate = new Translate(0,0);
-        this.currentShape.getTransforms().add(translate);
-        this.currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2->{
+        currentShape.getTransforms().add(translate);
+        currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2->{
             if(e2.getButton()==MouseButton.MIDDLE)
             {
 
 //                System.out.println("s2l:"+currentP.getX()+"**"+currentP.getY());
-                System.out.println("e2getx:"+e2.getX()+"**"+e2.getY());
+//                System.out.println("e2getx:"+e2.getX()+"**"+e2.getY());
 //                System.out.println("e2getscene:"+e2.getSceneX()+"**"+e2.getSceneY());
                 //更新转换器坐标
                 translate.setX(translate.getX()+(e2.getSceneX()-lastP.getX()));
@@ -132,9 +134,16 @@ public class Controller implements Initializable {
 
                 //记录坐标
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
+                System.out.println(choice01.getValue());
             }
         });
-        this.currentShape.addEventFilter(MouseEvent.MOUSE_PRESSED, e2->{
+        currentShape.addEventFilter(MouseEvent.MOUSE_PRESSED, e2->{
+            if(e2.getButton()==MouseButton.PRIMARY){
+                if(choice01.getValue().equals("Clear")){//equals 这种bugs尽然一时没看出来。。。
+                    Shape clearObject = (Shape)e2.getSource();
+                    drawpane.getChildren().remove(clearObject);
+                }
+            }
             if(e2.getButton()==MouseButton.MIDDLE)
             {
                 //必须用getScene坐标，如果用Shape自己的坐标会有卡顿的情况
