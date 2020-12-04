@@ -18,33 +18,43 @@
     <children>
         <ToolBar fx:id="toprightbar" layoutX="817.0" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <ChoiceBox fx:id="choice01" prefWidth="150.0" value="Pen">
+                <ChoiceBox fx:id="choice02" value="Cercle">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Circle" />
+                            <String fx:value="Rectangle" />
+                            <String fx:value="Oval" />
+                        </FXCollections>
+                    </items>
+                </ChoiceBox>
+                <ChoiceBox fx:id="choice01" onAction="#penChoise" value="Pen">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="Pen" />
+                            <String fx:value="Line" />
+                            <String fx:value="Shape" />
                             <String fx:value="Eraser" />
                             <String fx:value="Clear" />
-                            <String fx:value="Line" />
                         </FXCollections>
                     </items>
 
                 </ChoiceBox>
-                <ColorPicker fx:id="color01" />
+                <ColorPicker fx:id="color01" onAction="#updateColor" />
             </items>
         </ToolBar>
         <VBox alignment="CENTER" layoutY="80.0" prefHeight="700.0" prefWidth="36.0" AnchorPane.bottomAnchor="79.0" AnchorPane.topAnchor="80.0">
             <children>
                 <Slider fx:id="slider1" min="1.0" orientation="VERTICAL" prefHeight="275.0" prefWidth="18.0" />
                 <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="18.0" stroke="TRANSPARENT" strokeType="INSIDE" width="32.0" />
-                <Slider fx:id="slider2" orientation="VERTICAL" prefHeight="292.0" prefWidth="18.0" />
+                <Slider fx:id="slider2" onMouseReleased="#updateColor" orientation="VERTICAL" prefHeight="292.0" prefWidth="18.0" value="100.0" />
             </children>
         </VBox>
-        <AnchorPane fx:id="drawpane" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" prefHeight="749.0" prefWidth="926.0" style="-fx-border-color: #000000;" AnchorPane.bottomAnchor="48.0" AnchorPane.topAnchor="48.0">
+        <AnchorPane fx:id="drawpane" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" prefHeight="749.0" prefWidth="926.0" style="-fx-border-color: #000000;" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="48.0" AnchorPane.topAnchor="48.0">
             <cursor>
                 <Cursor fx:constant="DEFAULT" />
             </cursor>
         </AnchorPane>
-        <ToolBar layoutX="234.0" prefHeight="44.0" prefWidth="454.0" AnchorPane.topAnchor="0.0">
+        <ToolBar layoutX="234.0" AnchorPane.topAnchor="0.0">
             <items>
                 <Button fx:id="topbtn1" mnemonicParsing="false" text="Button" />
                 <Button fx:id="topbtn2" mnemonicParsing="false" text="Button" />

@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -25,11 +26,15 @@ public class Controller implements Initializable {
     public Slider slider2;
     public Button topbtn3;
     public Button topbtn4;
+    public ChoiceBox choice02;
 
 
-
-    private Path currentShape;
+    private Color currentColor;
+    private Shape currentShape;
     private Point2D lastP; //拖动时来计算移动向量
+
+    private Rectangle guideEdge = new Rectangle();
+    private Line guideLine = new Line();
 
 
 
@@ -37,15 +42,28 @@ public class Controller implements Initializable {
     public void printHello(){
         System.out.println("hello");
     }
+    public void penChoise(ActionEvent mouseEvent) {
+        if(choice01.getValue().equals("Shape"))
+            choice02.setVisible(true);
+        else choice02.setVisible(false);
+    }
+    public void updateColor(){
+        currentColor = new Color(color01.getValue().getRed(),color01.getValue().getGreen(),
+                color01.getValue().getBlue(),slider2.getValue()/100);
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        color01.setValue(Color.BLUE);
+        color01.setValue(Color.WHITE);
+        updateColor();
         drawpane.addEventFilter(MouseEvent.MOUSE_PRESSED, e->{
             if(e.getButton()== MouseButton.PRIMARY){
                 switch ((String)choice01.getValue()){
                     case "Pen":{
-                        startFreeDraw(new Path(),e.getX(),e.getY());
+                        startFreeDraw(e.getX(),e.getY());
                         break;
+                    }
+                    case "Shape":{
+                        startShapeDraw(e.getX(),e.getY());
                     }
                 }
             }
@@ -61,6 +79,10 @@ public class Controller implements Initializable {
                 switch ((String)choice01.getValue()){
                     case "Pen":{
                         freeDrawing(e.getX(),e.getY());
+                        break;
+                    }
+                    case "Shape":{
+                        shapeDraw(e.getX(),e.getY());
                         break;
                     }
                 }
@@ -88,64 +110,125 @@ public class Controller implements Initializable {
 
             }
         });
+        choice01.setValue("Pen");
+        choice02.setVisible(false);
     }
 
+
     //自由绘图
-    public void startFreeDraw(Path currentPath,double x,double y){
+    private void startFreeDraw(double x,double y){
+        Path currentPath = new Path();
         MoveTo moveTo = new MoveTo(x,y);
 //        System.out.println("panexy:"+drawpane.getLayoutX()+"**"+drawpane.getLayoutY());
 //        System.out.println("moveto:"+moveTo.getX()+"**"+moveTo.getY());
-        this.currentShape = currentPath;
         currentPath.getElements().add(moveTo);
+        currentShape = currentPath;
         initShape(x,y);
     }
 
-    public void freeDrawing(double x,double y){
+    private void freeDrawing(double x,double y){
         LineTo lineTo = new LineTo(x,y);
-        currentShape.getElements().add(lineTo);
+        Path currentPath = (Path)currentShape;
+        currentPath.getElements().add(lineTo);
     }
-    public void endFreeDraw(){
+    private void endFreeDraw(){
 
     }
 
 
-    public void initShape(double x,double y){
+    private void startShapeDraw(double x, double y) {
+        switch ((String) choice02.getValue()) {
+            case "Oval":
+            case "Circle":
+                currentShape = new Ellipse();
+                break;
+            case "Rectangle":
+                currentShape = new Rectangle();
+                break;
+            default:
+                break;
+        }
+        lastP = new Point2D(x,y);
+        guideEdge.setX(x);
+        guideEdge.setY(y);
+        guideEdge.setWidth(0);
+        guideEdge.setHeight(0);
+        guideEdge.setFill(currentColor);
+
+        guideLine.setStartX(x);
+        guideLine.setStartY(y);
+        guideLine.setEndX(x);
+        guideLine.setEndY(y);
+
+        drawpane.getChildren().addAll(guideEdge,guideLine);
+
+
+        initShape(x,y);
+    }
+    private void shapeDraw(double x, double y){
+        guideEdge.setWidth(x-lastP.getX());
+        guideEdge.setHeight(y-lastP.getY());
+
+        guideLine.setEndX(x);
+        guideLine.setEndY(y);
+        switch ((String) choice02.getValue()) {
+            case "Oval":
+            case "Circle": {
+                Ellipse currentEllipse = (Ellipse) currentShape;
+                currentEllipse.setCenterX((x+lastP.getX())/2);
+                currentEllipse.setCenterY((y+lastP.getY())/2);
+                currentEllipse.setRadiusX((x-lastP.getX())/2);
+                currentEllipse.setRadiusY((y-lastP.getY())/2);
+
+            }
+            case "Rectangle": {
+
+            }
+            default:
+                break;
+        }
+
+    }
+    private void endShapeDraw(){
+
+    }
+
+    private void initShape(double x,double y) {
         //初始化笔刷：
-        currentShape.setStroke(color01.getValue());
-        currentShape.setStrokeWidth(slider1.getValue());
+        currentShape.setFill(currentColor);
+        currentShape.setStroke(currentColor);
+        currentShape.setStrokeWidth(slider1.getValue()/10);
         //添加到容器
         drawpane.getChildren().add(currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动
-        Translate translate = new Translate(0,0);
+        Translate translate = new Translate(0, 0);
         currentShape.getTransforms().add(translate);
-        currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2->{
-            if(e2.getButton()==MouseButton.MIDDLE)
-            {
+        currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2 -> {
+            if (e2.getButton() == MouseButton.MIDDLE) {
 
 //                System.out.println("s2l:"+currentP.getX()+"**"+currentP.getY());
 //                System.out.println("e2getx:"+e2.getX()+"**"+e2.getY());
 //                System.out.println("e2getscene:"+e2.getSceneX()+"**"+e2.getSceneY());
                 //更新转换器坐标
-                translate.setX(translate.getX()+(e2.getSceneX()-lastP.getX()));
-                translate.setY(translate.getY()+(e2.getSceneY()-lastP.getY()));
+                translate.setX(translate.getX() + (e2.getSceneX() - lastP.getX()));
+                translate.setY(translate.getY() + (e2.getSceneY() - lastP.getY()));
 
 //                Translate translate = new Translate(e2.getX()-lastP.getX(),e2.getY()-lastP.getY());
 //                this.currentShape.getTransforms().add(translate);
 
                 //记录坐标
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
-                System.out.println(choice01.getValue());
+//                System.out.println(choice01.getValue());
             }
         });
-        currentShape.addEventFilter(MouseEvent.MOUSE_PRESSED, e2->{
-            if(e2.getButton()==MouseButton.PRIMARY){
-                if(choice01.getValue().equals("Clear")){//equals 这种bugs尽然一时没看出来。。。
-                    Shape clearObject = (Shape)e2.getSource();
+        currentShape.addEventFilter(MouseEvent.MOUSE_PRESSED, e2 -> {
+            if (e2.getButton() == MouseButton.PRIMARY) {
+                if (choice01.getValue().equals("Clear")) {//equals 这种bugs尽然一时没看出来。。。
+                    Shape clearObject = (Shape) e2.getSource();
                     drawpane.getChildren().remove(clearObject);
                 }
             }
-            if(e2.getButton()==MouseButton.MIDDLE)
-            {
+            if (e2.getButton() == MouseButton.MIDDLE) {
                 //必须用getScene坐标，如果用Shape自己的坐标会有卡顿的情况
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
