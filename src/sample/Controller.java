@@ -27,6 +27,7 @@ public class Controller implements Initializable {
     public Button topbtn3;
     public Button topbtn4;
     public ChoiceBox choice02;
+    public RadioButton autofilling;
 
 
     private Color currentColor;
@@ -43,8 +44,11 @@ public class Controller implements Initializable {
         System.out.println("hello");
     }
     public void penChoise(ActionEvent mouseEvent) {
-        if(choice01.getValue().equals("Shape"))
+        if(choice01.getValue().equals("Shape")){
             choice02.setVisible(true);
+            autofilling.setSelected(true);
+            autofilling.setDisable(true);
+        }
         else choice02.setVisible(false);
     }
     public void updateColor(){
@@ -195,7 +199,8 @@ public class Controller implements Initializable {
 
     private void initShape(double x,double y) {
         //初始化笔刷：
-        currentShape.setFill(currentColor);
+        if(autofilling.isSelected())
+            currentShape.setFill(currentColor);
         currentShape.setStroke(currentColor);
         currentShape.setStrokeWidth(slider1.getValue()/10);
         //添加到容器

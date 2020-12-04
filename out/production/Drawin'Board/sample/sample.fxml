@@ -56,10 +56,7 @@
         </AnchorPane>
         <ToolBar layoutX="234.0" AnchorPane.topAnchor="0.0">
             <items>
-                <Button fx:id="topbtn1" mnemonicParsing="false" text="Button" />
-                <Button fx:id="topbtn2" mnemonicParsing="false" text="Button" />
-                <Button fx:id="topbtn3" mnemonicParsing="false" text="Button" />
-                <Button fx:id="topbtn4" mnemonicParsing="false" onMouseClicked="#printHello" text="Button" />
+            <RadioButton fx:id="autofilling" mnemonicParsing="false" text="Auto-Filling" selected="false"/>
             </items>
         </ToolBar>
         <MenuBar layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
