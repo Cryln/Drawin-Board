@@ -2,10 +2,15 @@ package sample;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -14,7 +19,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Translate;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -31,6 +41,7 @@ public class Controller implements Initializable {
     public Button topbtn4;
     public ChoiceBox choice02;
     public RadioButton autofilling;
+    public MenuItem fileopen;
 
     private boolean shifted;
     private Color currentColor;
@@ -43,10 +54,11 @@ public class Controller implements Initializable {
 
 
     @FXML
+    //一系列控件交互函数
     public void printHello(){
         System.out.println("hello");
     }
-    public void penChoise(ActionEvent mouseEvent) {
+    public void penChoise() {
         if(choice01.getValue().equals("Shape")){
             choice02.setVisible(true);
             autofilling.setSelected(true);
@@ -63,10 +75,33 @@ public class Controller implements Initializable {
         currentColor = new Color(color01.getValue().getRed(),color01.getValue().getGreen(),
                 color01.getValue().getBlue(),slider2.getValue()/100);
     }
+    public void openfile() {
+        File file = new FileChooser().showOpenDialog(mainpane.getScene().getWindow());
+        ImageView imageView = new ImageView(new Image(file.toURI().toString()));
+        imageView.setFitHeight(drawpane.getHeight());
+        imageView.setFitWidth(drawpane.getWidth());
+        drawpane.getChildren().add(imageView);
+    }
+    public void savefile() throws IOException {
+        //我猜有这么个方法，果然有。。。
+        File file = new DirectoryChooser().showDialog(mainpane.getScene().getWindow());
+        WritableImage image = drawpane.snapshot(new SnapshotParameters(), null);
+        ImageIO.write((RenderedImage) image,"png",file);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         color01.setValue(Color.WHITE);
         updateColor();
+        paneEvenBinding();
+        choice01.setValue("Pen");
+        choice02.setVisible(false);
+
+    }
+
+    //事件绑定
+    private void paneEvenBinding(){
+        //drawpane 鼠标按下
         drawpane.addEventFilter(MouseEvent.MOUSE_PRESSED, e->{
             if(e.getButton()== MouseButton.PRIMARY){
                 switch ((String)choice01.getValue()){
@@ -86,6 +121,7 @@ public class Controller implements Initializable {
 
             }
         });
+        //drawpane 鼠标拖动
         drawpane.addEventFilter(MouseEvent.MOUSE_DRAGGED, e->{
             if(e.getButton()== MouseButton.PRIMARY){
                 switch ((String)choice01.getValue()){
@@ -109,6 +145,7 @@ public class Controller implements Initializable {
 
             }
         });
+        //drawpane 鼠标释放
         drawpane.addEventFilter(MouseEvent.MOUSE_RELEASED, e->{
             if(e.getButton()== MouseButton.PRIMARY){
                 switch ((String)choice01.getValue()){
@@ -129,14 +166,7 @@ public class Controller implements Initializable {
 
             }
         });
-        mainpane.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if(keyEvent.getCode()== KeyCode.SHIFT){
-                    shifted = false;
-                }
-            }
-        });
+        //mainpane 按键按下
         mainpane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -145,14 +175,21 @@ public class Controller implements Initializable {
                 }
             }
         });
-        choice01.setValue("Pen");
-        choice02.setVisible(false);
+        //mainpane 按键释放
+        mainpane.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if(keyEvent.getCode()== KeyCode.SHIFT){
+                    shifted = false;
+                }
+            }
+        });
+
     }
-
-
     //自由绘图
     private void startFreeDraw(double x,double y){
         Path currentPath = new Path();
+
         MoveTo moveTo = new MoveTo(x,y);
 //        System.out.println("panexy:"+drawpane.getLayoutX()+"**"+drawpane.getLayoutY());
 //        System.out.println("moveto:"+moveTo.getX()+"**"+moveTo.getY());
@@ -279,4 +316,5 @@ public class Controller implements Initializable {
             }
         });
     }
+
 }

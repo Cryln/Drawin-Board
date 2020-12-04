@@ -21,7 +21,6 @@
                 <ChoiceBox fx:id="choice02" value="Cercle">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Circle" />
                             <String fx:value="Rectangle" />
                             <String fx:value="Oval" />
                         </FXCollections>
@@ -56,24 +55,15 @@
         </AnchorPane>
         <ToolBar layoutX="234.0" AnchorPane.topAnchor="0.0">
             <items>
-            <RadioButton fx:id="autofilling" mnemonicParsing="false" text="Auto-Filling" selected="false"/>
+            <RadioButton fx:id="autofilling" mnemonicParsing="false" selected="false" text="Auto-Filling" />
             </items>
         </ToolBar>
         <MenuBar layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem fx:id="fileopen" mnemonicParsing="false" text="open" onAction="#openfile"/>
+                  <MenuItem fx:id="filesave" mnemonicParsing="false" text="save" onAction="#savefile"/>
                     </items>
                 </Menu>
             </menus>
