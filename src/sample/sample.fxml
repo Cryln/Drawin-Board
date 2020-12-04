@@ -21,7 +21,6 @@
                 <ChoiceBox fx:id="choice02" value="Cercle">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Circle" />
                             <String fx:value="Rectangle" />
                             <String fx:value="Oval" />
                         </FXCollections>

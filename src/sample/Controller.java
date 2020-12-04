@@ -1,10 +1,13 @@
 package sample;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -29,7 +32,7 @@ public class Controller implements Initializable {
     public ChoiceBox choice02;
     public RadioButton autofilling;
 
-
+    private boolean shifted;
     private Color currentColor;
     private Shape currentShape;
     private Point2D lastP; //拖动时来计算移动向量
@@ -48,6 +51,11 @@ public class Controller implements Initializable {
             choice02.setVisible(true);
             autofilling.setSelected(true);
             autofilling.setDisable(true);
+        }
+        else if(choice01.getValue().equals("Pen"))
+        {
+            autofilling.setDisable(false);
+            choice02.setVisible(false);
         }
         else choice02.setVisible(false);
     }
@@ -86,7 +94,10 @@ public class Controller implements Initializable {
                         break;
                     }
                     case "Shape":{
-                        shapeDraw(e.getX(),e.getY());
+                        if(!shifted)
+                            shapeDraw(e.getX(),e.getY());
+                        else shapeDraw((e.getX()+e.getY()+lastP.getX()-lastP.getY())/2,
+                                (e.getX()+e.getY()-lastP.getX()+lastP.getY())/2);
                         break;
                     }
                 }
@@ -105,6 +116,10 @@ public class Controller implements Initializable {
                         endFreeDraw();
                         break;
                     }
+                    case "Shape":{
+                        endShapeDraw();
+                        break;
+                    }
                 }
             }
             else if(e.getButton()== MouseButton.SECONDARY){
@@ -112,6 +127,22 @@ public class Controller implements Initializable {
             }
             else if(e.getButton()== MouseButton.MIDDLE){
 
+            }
+        });
+        mainpane.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if(keyEvent.getCode()== KeyCode.SHIFT){
+                    shifted = false;
+                }
+            }
+        });
+        mainpane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if(keyEvent.getCode()== KeyCode.SHIFT){
+                    shifted = true;
+                }
             }
         });
         choice01.setValue("Pen");
@@ -152,12 +183,14 @@ public class Controller implements Initializable {
             default:
                 break;
         }
+        initShape(x,y);
+
         lastP = new Point2D(x,y);
         guideEdge.setX(x);
         guideEdge.setY(y);
         guideEdge.setWidth(0);
         guideEdge.setHeight(0);
-        guideEdge.setFill(currentColor);
+        guideEdge.setFill(new Color(0,0,0,0.1));
 
         guideLine.setStartX(x);
         guideLine.setStartY(y);
@@ -166,9 +199,9 @@ public class Controller implements Initializable {
 
         drawpane.getChildren().addAll(guideEdge,guideLine);
 
-
-        initShape(x,y);
     }
+
+
     private void shapeDraw(double x, double y){
         guideEdge.setWidth(x-lastP.getX());
         guideEdge.setHeight(y-lastP.getY());
@@ -184,9 +217,16 @@ public class Controller implements Initializable {
                 currentEllipse.setRadiusX((x-lastP.getX())/2);
                 currentEllipse.setRadiusY((y-lastP.getY())/2);
 
+                guideLine.setStartX((x+lastP.getX())/2);
+                guideLine.setStartY((y+lastP.getY())/2);
+
             }
             case "Rectangle": {
-
+                Rectangle currentRect = (Rectangle) currentShape;
+                currentRect.setX(lastP.getX());
+                currentRect.setY(lastP.getY());
+                currentRect.setWidth(x-lastP.getX());
+                currentRect.setHeight(y-lastP.getY());
             }
             default:
                 break;
@@ -194,7 +234,7 @@ public class Controller implements Initializable {
 
     }
     private void endShapeDraw(){
-
+        drawpane.getChildren().removeAll(guideEdge,guideLine);
     }
 
     private void initShape(double x,double y) {
