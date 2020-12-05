@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +21,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -107,8 +109,16 @@ public class Controller implements Initializable {
     }
     public void savefile() throws IOException {
         //我猜有这么个方法，果然有。。。
-        File file = new DirectoryChooser().showDialog(mainpane.getScene().getWindow());
+        File dir = new DirectoryChooser().showDialog(mainpane.getScene().getWindow());
+        File file = new File(dir.getPath()+"myimg.png");
         WritableImage image = drawpane.snapshot(new SnapshotParameters(), null);
+//        ImageView imageView = new ImageView(image);
+//        Image image1 = new Image(image);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        }
+        catch (Exception s) {
+        }
         //ImageIO.write((RenderedImage) image,"png",file);
     }
 
@@ -315,6 +325,8 @@ public class Controller implements Initializable {
     private void endShapeDraw(){
         drawpane.getChildren().removeAll(guideEdge,guideLine);
     }
+
+    //TODO 文本添加
 
     private void initShape(double x,double y) {
         //初始化笔刷：

@@ -14,11 +14,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.collections.FXCollections?>
 
-<AnchorPane fx:id="mainpane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="671.0" prefWidth="1022.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane fx:id="mainpane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="671.0" prefWidth="1022.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <ToolBar fx:id="toprightbar" layoutX="817.0" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <ChoiceBox fx:id="choice02" value="Null" onAction="#switchSlider1Lock">
+                <ChoiceBox fx:id="choice02" onAction="#switchSlider1Lock" value="Null">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="Rectangle" />
@@ -47,7 +47,7 @@
                 <Slider fx:id="slider2" onMouseReleased="#updateColor" orientation="VERTICAL" prefHeight="292.0" prefWidth="18.0" value="100.0" />
             </children>
         </VBox>
-        <AnchorPane fx:id="drawpane" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" prefHeight="749.0" prefWidth="926.0" style="-fx-border-color: #000000;" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="48.0" AnchorPane.topAnchor="48.0">
+        <AnchorPane fx:id="drawpane" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" prefHeight="749.0" prefWidth="926.0" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="48.0" AnchorPane.topAnchor="48.0">
             <cursor>
                 <Cursor fx:constant="DEFAULT" />
             </cursor>
