@@ -1,7 +1,11 @@
 package sample;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -17,6 +21,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -25,6 +31,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -43,6 +50,8 @@ public class Controller implements Initializable {
     public RadioButton roundangle;
 
     public MenuItem fileopen;
+    public ChoiceBox fontchoice;
+    public TextArea textarea1;
 
     private boolean shifted;
     private Color currentColor;
@@ -129,14 +138,26 @@ public class Controller implements Initializable {
         paneEvenBinding();
         choice01.setValue("Pen");
         choice02.setVisible(false);
+        textarea1.setVisible(false);
+
+        List<String> families = Font.getFamilies();
+        for(String family:families){
+            List<String> fonts = Font.getFontNames(family);
+            for(String font:fonts){
+                fontchoice.getItems().add(font);
+            }
+        }
 
     }
 
     //事件绑定
     private void paneEvenBinding(){
+
         //drawpane 鼠标按下
         drawpane.addEventFilter(MouseEvent.MOUSE_PRESSED, e->{
+            drawpane.requestFocus();
             if(e.getButton()== MouseButton.PRIMARY){
+
                 switch ((String)choice01.getValue()){
                     case "Pen":{
                         startFreeDraw(e.getX(),e.getY());
@@ -145,6 +166,11 @@ public class Controller implements Initializable {
                     case "Line":
                     case "Shape":{
                         startShapeDraw(e.getX(),e.getY());
+                        break;
+                    }
+                    case "Text":{
+                        startTextDraw(e.getX(),e.getY());
+                        break;
                     }
 
                 }
@@ -172,6 +198,10 @@ public class Controller implements Initializable {
                                 (e.getX()+e.getY()-lastP.getX()+lastP.getY())/2);
                         break;
                     }
+                    case "Text":{
+                        textDraw(e.getX(),e.getY());
+                        break;
+                    }
 
                 }
             }
@@ -193,6 +223,10 @@ public class Controller implements Initializable {
                     case "Line":
                     case "Shape":{
                         endShapeDraw();
+                        break;
+                    }
+                    case "Text":{
+                        endTextDraw(e.getX(),e.getY());
                         break;
                     }
                 }
@@ -233,7 +267,7 @@ public class Controller implements Initializable {
 //        System.out.println("moveto:"+moveTo.getX()+"**"+moveTo.getY());
         currentPath.getElements().add(moveTo);
         currentShape = currentPath;
-        initShape(x,y);
+        initShape();
     }
 
     private void freeDraw(double x, double y){
@@ -246,7 +280,7 @@ public class Controller implements Initializable {
 
     }
 
-
+//图形绘制
     private void startShapeDraw(double x, double y) {
         switch ((String) choice02.getValue()) {
             case "Oval":
@@ -262,7 +296,7 @@ public class Controller implements Initializable {
             default:
                 break;
         }
-        initShape(x,y);
+        initShape();
 
         lastP = new Point2D(x,y);
         guideEdge.setX(x);
@@ -327,13 +361,51 @@ public class Controller implements Initializable {
     }
 
     //TODO 文本添加
+//文本绘制
+    private void startTextDraw(double x,double y){
+        //TODO 字体还需要设置动态调整
 
-    private void initShape(double x,double y) {
+
+    }
+    private void textDraw(double x,double y){
+
+    }
+    private void endTextDraw(double x,double y){
+        if(textarea1.isVisible())return;
+        textarea1.setLayoutX(x);
+        textarea1.setLayoutY(y);
+        textarea1.setVisible(true);
+        Font font = new Font(fontchoice.getValue().toString(),slider1.getValue());
+        textarea1.setFont(font);
+        textarea1.focusedProperty().addListener(new ChangeListener<Boolean>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+                if(!observableValue.getValue()){
+                    //System.out.println("type finished");
+                    Text text = new Text(textarea1.getText());
+                    text.setFont(font);
+                    text.setStroke(currentColor);
+                    text.setX(textarea1.getLayoutX());
+                    text.setY(textarea1.getLayoutY());
+                    currentShape = text;
+                    initShape();
+                    textarea1.clear();
+                    textarea1.setVisible(false);
+
+                }
+            }
+        });
+
+    }
+
+    private void initShape() {
         //初始化笔刷：
         if(autofilling.isSelected())
             currentShape.setFill(currentColor);
         currentShape.setStroke(currentColor);
-        currentShape.setStrokeWidth(slider1.getValue());
+        if(!choice01.getValue().equals("Text"))
+            currentShape.setStrokeWidth(slider1.getValue());
         if(choice01.getValue().equals("Shape")) {
             currentShape.setStrokeType(StrokeType.OUTSIDE);
         }
@@ -347,7 +419,9 @@ public class Controller implements Initializable {
         //同时设置一个动作过滤器，和一个转换器来实现移动
         Translate translate = new Translate(0, 0);
         currentShape.getTransforms().add(translate);
+        Shape s = currentShape;
         currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2 -> {
+            s.requestFocus();
             if (e2.getButton() == MouseButton.MIDDLE) {
 
 //                System.out.println("s2l:"+currentP.getX()+"**"+currentP.getY());
@@ -365,9 +439,14 @@ public class Controller implements Initializable {
 //                System.out.println(choice01.getValue());
             }
         });
+
         currentShape.addEventFilter(MouseEvent.MOUSE_PRESSED, e2 -> {
+            //这里不能用currentShape来获取焦点
+
+            s.requestFocus();
+            System.out.println(mainpane.getScene().focusOwnerProperty().toString());
             if (e2.getButton() == MouseButton.PRIMARY) {
-                if (choice01.getValue().equals("Clear")) {//equals 这种bugs尽然一时没看出来。。。
+                if (choice01.getValue().equals("Clear")) {//equals 这种bugs 竟然一时没看出来。。。
                     Shape clearObject = (Shape) e2.getSource();
                     drawpane.getChildren().remove(clearObject);
                 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.shape.*?>
@@ -32,6 +33,7 @@
                             <String fx:value="Pen" />
                             <String fx:value="Line" />
                             <String fx:value="Shape" />
+                            <String fx:value="Text" />
                             <String fx:value="Clear" />
                         </FXCollections>
                     </items>
@@ -47,15 +49,19 @@
                 <Slider fx:id="slider2" onMouseReleased="#updateColor" orientation="VERTICAL" prefHeight="292.0" prefWidth="18.0" value="100.0" />
             </children>
         </VBox>
-        <AnchorPane fx:id="drawpane" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" prefHeight="749.0" prefWidth="926.0" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="48.0" AnchorPane.topAnchor="48.0">
+        <AnchorPane fx:id="drawpane" focusTraversable="true" layoutX="50.0" layoutY="55.0" onMouseClicked="#printHello" style="-fx-background-color: #ffffff;" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="48.0" AnchorPane.rightAnchor="48.0" AnchorPane.topAnchor="48.0">
             <cursor>
                 <Cursor fx:constant="DEFAULT" />
             </cursor>
+         <children>
+            <TextArea fx:id="textarea1" layoutX="72.0" layoutY="31.0" prefHeight="293.0" prefWidth="371.0" />
+         </children>
         </AnchorPane>
         <ToolBar layoutX="234.0" AnchorPane.topAnchor="0.0">
             <items>
             <RadioButton fx:id="autofilling" mnemonicParsing="false" selected="false" text="Auto-Filling" />
             <RadioButton fx:id="roundangle" mnemonicParsing="false" text="RoundAngle" />
+            <ChoiceBox fx:id="fontchoice" value="System Regular" />
             </items>
         </ToolBar>
         <MenuBar layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
