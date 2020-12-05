@@ -483,31 +483,46 @@ public class Controller implements Initializable {
                 switch(sClass){
                     case "class javafx.scene.shape.Rectangle":{
                         Rectangle rect = (Rectangle)s;
-                        pivotP = new Point2D(rect.getX()+rect.getWidth()/2,rect.getY()+ rect.getHeight()/2);
+                        pivotP = new Point2D(rect.getX()+rect.getWidth()/2,
+                                rect.getY()+ rect.getHeight()/2);
                         break;
                     }
                     case "class javafx.scene.shape.Ellipse":{
                         Ellipse oval = (Ellipse)s;
-                        pivotP = new Point2D(oval.getCenterX(),oval.getCenterY());
+                        pivotP = new Point2D(oval.getCenterX(),
+                                oval.getCenterY());
                         break;
                     }
                     case "class javafx.scene.text.Text":{
                         Text text = (Text)s;
-                        pivotP = new Point2D(text.getX(), text.getY());
+                        pivotP = new Point2D(text.getX(),
+                                text.getY());
                         break;
                     }
                     default:pivotP = new Point2D(0,0);
                 }
                 //TODO
-                double angle1 = Math.toDegrees(Math.atan2(e2.getY()-pivotP.getY(),e2.getX()-pivotP.getX()));
-                double angle2 = Math.toDegrees(Math.atan2(lastP.getY()-pivotP.getY(),lastP.getY()-pivotP.getX()));
-                double newAngle = rotate.getAngle()+(angle1-angle2);
+                //这里表达式写错了，debug至少2个小时，真的吐了！
+                double angle1 = Math.toDegrees(Math.atan2(lastP.getY()-(pivotP.getY()+translate.getY()+48),
+                        lastP.getX()-(pivotP.getX()+translate.getX()+48)));
+                double angle2 = Math.toDegrees(Math.atan2(e2.getSceneY()-(pivotP.getY()+translate.getY()+48),
+                        e2.getSceneX()-(pivotP.getX()+translate.getX()+48)));
+
+                double newAngle = rotate.getAngle()-(angle1-angle2);
                 while(newAngle<0)newAngle+=360;
                 while(newAngle>360)newAngle-=360;
-                rotate.setAngle(newAngle);
                 rotate.setPivotX(pivotP.getX());
                 rotate.setPivotY(pivotP.getY());
-                lastP = new Point2D(e2.getX(), e2.getY());
+                rotate.setAngle(newAngle);
+
+//                System.out.println("start:"+lastP);
+//                System.out.println("end : "+new Point2D(e2.getSceneX(),e2.getSceneY()));
+//                System.out.println("pivot:"+new Point2D((pivotP.getX()+translate.getX()+48),(pivotP.getY()+translate.getY()+48)));
+//                System.out.println("angleS:"+angle2);
+//                System.out.println("angleE:"+angle1);
+//                System.out.println("rotateA:"+rotate.getAngle());
+//                System.out.println("***********************");
+                lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
         });
 
@@ -528,7 +543,7 @@ public class Controller implements Initializable {
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
             else if(e2.getButton()==MouseButton.SECONDARY){
-                lastP = new Point2D(e2.getX(), e2.getY());
+                lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
         });
     }
