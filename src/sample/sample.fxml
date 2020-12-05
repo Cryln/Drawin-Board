@@ -18,7 +18,7 @@
     <children>
         <ToolBar fx:id="toprightbar" layoutX="817.0" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <ChoiceBox fx:id="choice02" value="Cercle">
+                <ChoiceBox fx:id="choice02" value="Null">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="Rectangle" />
@@ -32,7 +32,6 @@
                             <String fx:value="Pen" />
                             <String fx:value="Line" />
                             <String fx:value="Shape" />
-                            <String fx:value="Eraser" />
                             <String fx:value="Clear" />
                         </FXCollections>
                     </items>

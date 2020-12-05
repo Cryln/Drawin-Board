@@ -1,8 +1,6 @@
 package sample;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -22,7 +20,6 @@ import javafx.scene.transform.Translate;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -59,6 +56,7 @@ public class Controller implements Initializable {
         System.out.println("hello");
     }
     public void penChoise() {
+        //System.out.println(choice02.getValue());
         if(choice01.getValue().equals("Shape")){
             choice02.setVisible(true);
             autofilling.setSelected(true);
@@ -67,9 +65,17 @@ public class Controller implements Initializable {
         else if(choice01.getValue().equals("Pen"))
         {
             autofilling.setDisable(false);
+            choice02.setValue("Null");
             choice02.setVisible(false);
         }
-        else choice02.setVisible(false);
+        else if(choice01.getValue().equals("Line")){
+            choice02.setValue("Line");
+            choice02.setVisible(false);
+        }
+        else {
+            choice02.setValue("Null");
+            choice02.setVisible(false);
+        }
     }
     public void updateColor(){
         currentColor = new Color(color01.getValue().getRed(),color01.getValue().getGreen(),
@@ -91,7 +97,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        color01.setValue(Color.WHITE);
+        color01.setValue(Color.BLACK);
         updateColor();
         paneEvenBinding();
         choice01.setValue("Pen");
@@ -109,9 +115,11 @@ public class Controller implements Initializable {
                         startFreeDraw(e.getX(),e.getY());
                         break;
                     }
+                    case "Line":
                     case "Shape":{
                         startShapeDraw(e.getX(),e.getY());
                     }
+
                 }
             }
             else if(e.getButton()== MouseButton.SECONDARY){
@@ -126,9 +134,10 @@ public class Controller implements Initializable {
             if(e.getButton()== MouseButton.PRIMARY){
                 switch ((String)choice01.getValue()){
                     case "Pen":{
-                        freeDrawing(e.getX(),e.getY());
+                        freeDraw(e.getX(),e.getY());
                         break;
                     }
+                    case "Line":
                     case "Shape":{
                         if(!shifted)
                             shapeDraw(e.getX(),e.getY());
@@ -136,6 +145,7 @@ public class Controller implements Initializable {
                                 (e.getX()+e.getY()-lastP.getX()+lastP.getY())/2);
                         break;
                     }
+
                 }
             }
             else if(e.getButton()== MouseButton.SECONDARY){
@@ -153,6 +163,7 @@ public class Controller implements Initializable {
                         endFreeDraw();
                         break;
                     }
+                    case "Line":
                     case "Shape":{
                         endShapeDraw();
                         break;
@@ -198,7 +209,7 @@ public class Controller implements Initializable {
         initShape(x,y);
     }
 
-    private void freeDrawing(double x,double y){
+    private void freeDraw(double x, double y){
         LineTo lineTo = new LineTo(x,y);
 
         Path currentPath = (Path)currentShape;
@@ -217,6 +228,9 @@ public class Controller implements Initializable {
                 break;
             case "Rectangle":
                 currentShape = new Rectangle();
+                break;
+            case "Line":
+                currentShape = new Line();
                 break;
             default:
                 break;
@@ -266,6 +280,14 @@ public class Controller implements Initializable {
                 currentRect.setWidth(x-lastP.getX());
                 currentRect.setHeight(y-lastP.getY());
             }
+            case "Line": {
+                Line currentLine = (Line)currentShape;
+                currentLine.setStartX(lastP.getX());
+                currentLine.setStartY(lastP.getY());
+                currentLine.setEndX(x);
+                currentLine.setEndY(y);
+                break;
+            }
             default:
                 break;
         }
@@ -281,6 +303,9 @@ public class Controller implements Initializable {
             currentShape.setFill(currentColor);
         currentShape.setStroke(currentColor);
         currentShape.setStrokeWidth(slider1.getValue());
+        if(choice01.getValue().equals("Shape"))
+            currentShape.setStrokeType(StrokeType.INSIDE);
+
         currentShape.setStrokeLineCap(StrokeLineCap.ROUND);
         currentShape.setStrokeLineJoin(StrokeLineJoin.ROUND);
         //添加到容器
