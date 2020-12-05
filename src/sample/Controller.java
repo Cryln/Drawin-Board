@@ -31,13 +31,15 @@ public class Controller implements Initializable {
     public AnchorPane drawpane;
     public ToolBar toprightbar;
     public ChoiceBox choice01;
+    public ChoiceBox choice02;
+
     public ColorPicker color01;
     public Slider slider1;
     public Slider slider2;
-    public Button topbtn3;
-    public Button topbtn4;
-    public ChoiceBox choice02;
+
     public RadioButton autofilling;
+    public RadioButton roundangle;
+
     public MenuItem fileopen;
 
     private boolean shifted;
@@ -55,15 +57,27 @@ public class Controller implements Initializable {
     public void printHello(){
         System.out.println("hello");
     }
+
+    public void switchSlider1Lock(){
+        if(choice02.getValue().equals("Oval"))
+        {
+            slider1.setValue(1);
+            slider1.setDisable(true);
+        }else slider1.setDisable(false);
+    }
     public void penChoise() {
-        //System.out.println(choice02.getValue());
+        System.out.println(choice01.getValue()+"****"+choice02.getValue());
         if(choice01.getValue().equals("Shape")){
             choice02.setVisible(true);
+            choice02.setValue("Oval");
             autofilling.setSelected(true);
             autofilling.setDisable(true);
+            roundangle.setDisable(false);
         }
         else if(choice01.getValue().equals("Pen"))
         {
+            roundangle.setSelected(true);
+            roundangle.setDisable(true);
             autofilling.setDisable(false);
             choice02.setValue("Null");
             choice02.setVisible(false);
@@ -71,11 +85,14 @@ public class Controller implements Initializable {
         else if(choice01.getValue().equals("Line")){
             choice02.setValue("Line");
             choice02.setVisible(false);
+            roundangle.setDisable(false);
         }
         else {
             choice02.setValue("Null");
             choice02.setVisible(false);
+            roundangle.setDisable(false);
         }
+        System.out.println("now:"+choice01.getValue()+"****"+choice02.getValue());
     }
     public void updateColor(){
         currentColor = new Color(color01.getValue().getRed(),color01.getValue().getGreen(),
@@ -224,13 +241,13 @@ public class Controller implements Initializable {
         switch ((String) choice02.getValue()) {
             case "Oval":
             case "Circle":
-                currentShape = new Ellipse();
+                currentShape = new Ellipse(x,y,0,0);
                 break;
             case "Rectangle":
-                currentShape = new Rectangle();
+                currentShape = new Rectangle(x,y,0,0);
                 break;
             case "Line":
-                currentShape = new Line();
+                currentShape = new Line(x,y,x,y);
                 break;
             default:
                 break;
@@ -271,6 +288,7 @@ public class Controller implements Initializable {
 
                 guideLine.setStartX((x+lastP.getX())/2);
                 guideLine.setStartY((y+lastP.getY())/2);
+                break;
 
             }
             case "Rectangle": {
@@ -279,6 +297,7 @@ public class Controller implements Initializable {
                 currentRect.setY(lastP.getY());
                 currentRect.setWidth(x-lastP.getX());
                 currentRect.setHeight(y-lastP.getY());
+                break;
             }
             case "Line": {
                 Line currentLine = (Line)currentShape;
@@ -303,11 +322,14 @@ public class Controller implements Initializable {
             currentShape.setFill(currentColor);
         currentShape.setStroke(currentColor);
         currentShape.setStrokeWidth(slider1.getValue());
-        if(choice01.getValue().equals("Shape"))
-            currentShape.setStrokeType(StrokeType.INSIDE);
-
-        currentShape.setStrokeLineCap(StrokeLineCap.ROUND);
+        if(choice01.getValue().equals("Shape")) {
+            currentShape.setStrokeType(StrokeType.OUTSIDE);
+        }
+        if(roundangle.isSelected())
+            currentShape.setStrokeLineCap(StrokeLineCap.ROUND);
         currentShape.setStrokeLineJoin(StrokeLineJoin.ROUND);
+
+
         //添加到容器
         drawpane.getChildren().add(currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动

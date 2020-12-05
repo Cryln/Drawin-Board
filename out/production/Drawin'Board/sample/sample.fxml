@@ -18,7 +18,7 @@
     <children>
         <ToolBar fx:id="toprightbar" layoutX="817.0" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <ChoiceBox fx:id="choice02" value="Null">
+                <ChoiceBox fx:id="choice02" value="Null" onAction="#switchSlider1Lock">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="Rectangle" />
@@ -55,14 +55,15 @@
         <ToolBar layoutX="234.0" AnchorPane.topAnchor="0.0">
             <items>
             <RadioButton fx:id="autofilling" mnemonicParsing="false" selected="false" text="Auto-Filling" />
+            <RadioButton fx:id="roundangle" mnemonicParsing="false" text="RoundAngle" />
             </items>
         </ToolBar>
         <MenuBar layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="fileopen" mnemonicParsing="false" text="open" onAction="#openfile"/>
-                  <MenuItem fx:id="filesave" mnemonicParsing="false" text="save" onAction="#savefile"/>
+                        <MenuItem fx:id="fileopen" mnemonicParsing="false" onAction="#openfile" text="open" />
+                  <MenuItem fx:id="filesave" mnemonicParsing="false" onAction="#savefile" text="save" />
                     </items>
                 </Menu>
             </menus>
