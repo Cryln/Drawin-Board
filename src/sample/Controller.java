@@ -86,7 +86,7 @@ public class Controller implements Initializable {
         //我猜有这么个方法，果然有。。。
         File file = new DirectoryChooser().showDialog(mainpane.getScene().getWindow());
         WritableImage image = drawpane.snapshot(new SnapshotParameters(), null);
-        ImageIO.write((RenderedImage) image,"png",file);
+        //ImageIO.write((RenderedImage) image,"png",file);
     }
 
     @Override
@@ -200,6 +200,7 @@ public class Controller implements Initializable {
 
     private void freeDrawing(double x,double y){
         LineTo lineTo = new LineTo(x,y);
+
         Path currentPath = (Path)currentShape;
         currentPath.getElements().add(lineTo);
     }
@@ -279,7 +280,9 @@ public class Controller implements Initializable {
         if(autofilling.isSelected())
             currentShape.setFill(currentColor);
         currentShape.setStroke(currentColor);
-        currentShape.setStrokeWidth(slider1.getValue()/10);
+        currentShape.setStrokeWidth(slider1.getValue());
+        currentShape.setStrokeLineCap(StrokeLineCap.ROUND);
+        currentShape.setStrokeLineJoin(StrokeLineJoin.ROUND);
         //添加到容器
         drawpane.getChildren().add(currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动
