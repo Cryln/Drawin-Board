@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -57,6 +58,7 @@ public class Controller implements Initializable {
     private Color currentColor;
     private Shape currentShape;
     private Point2D lastP; //拖动时来计算移动向量
+    private String currentFont;
 
     private Rectangle guideEdge = new Rectangle();
     private Line guideLine = new Line();
@@ -70,11 +72,11 @@ public class Controller implements Initializable {
     }
 
     public void switchSlider1Lock(){
-        if(choice02.getValue().equals("Oval"))
-        {
-            slider1.setValue(1);
-            slider1.setDisable(true);
-        }else slider1.setDisable(false);
+//        if(choice02.getValue().equals("Oval"))
+//        {
+//            slider1.setValue(1);
+//            slider1.setDisable(true);
+//        }else slider1.setDisable(false);
     }
     public void penChoise() {
         System.out.println(choice01.getValue()+"****"+choice02.getValue());
@@ -109,6 +111,9 @@ public class Controller implements Initializable {
         currentColor = new Color(color01.getValue().getRed(),color01.getValue().getGreen(),
                 color01.getValue().getBlue(),slider2.getValue()/100);
     }
+    public void updateFont(){
+        currentFont = fontchoice.getValue().toString();
+    }
     public void openfile() {
         File file = new FileChooser().showOpenDialog(mainpane.getScene().getWindow());
         ImageView imageView = new ImageView(new Image(file.toURI().toString()));
@@ -135,6 +140,7 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         color01.setValue(Color.BLACK);
         updateColor();
+        updateFont();
         paneEvenBinding();
         choice01.setValue("Pen");
         choice02.setVisible(false);
@@ -267,7 +273,7 @@ public class Controller implements Initializable {
 //        System.out.println("moveto:"+moveTo.getX()+"**"+moveTo.getY());
         currentPath.getElements().add(moveTo);
         currentShape = currentPath;
-        initShape();
+        setShape();
     }
 
     private void freeDraw(double x, double y){
@@ -296,7 +302,7 @@ public class Controller implements Initializable {
             default:
                 break;
         }
-        initShape();
+        setShape();
 
         lastP = new Point2D(x,y);
         guideEdge.setX(x);
@@ -372,11 +378,11 @@ public class Controller implements Initializable {
     }
     private void endTextDraw(double x,double y){
         if(textarea1.isVisible())return;
+        textarea1.requestFocus();
         textarea1.setLayoutX(x);
         textarea1.setLayoutY(y);
         textarea1.setVisible(true);
-        Font font = new Font(fontchoice.getValue().toString(),slider1.getValue());
-        textarea1.setFont(font);
+        textarea1.setFont(new Font(currentFont,slider1.getValue()));
         textarea1.focusedProperty().addListener(new ChangeListener<Boolean>()
         {
             @Override
@@ -384,42 +390,76 @@ public class Controller implements Initializable {
                 if(!observableValue.getValue()){
                     //System.out.println("type finished");
                     Text text = new Text(textarea1.getText());
-                    text.setFont(font);
-                    text.setStroke(currentColor);
                     text.setX(textarea1.getLayoutX());
                     text.setY(textarea1.getLayoutY());
                     currentShape = text;
-                    initShape();
+                    setText();
                     textarea1.clear();
                     textarea1.setVisible(false);
-
+                    choice01.setValue("Pen");
                 }
             }
         });
 
     }
 
-    private void initShape() {
-        //初始化笔刷：
+    private void setShape(){
+        //设置填充
         if(autofilling.isSelected())
             currentShape.setFill(currentColor);
+        //笔触颜色
         currentShape.setStroke(currentColor);
-        if(!choice01.getValue().equals("Text"))
-            currentShape.setStrokeWidth(slider1.getValue());
+        //笔触大小
+        currentShape.setStrokeWidth(slider1.getValue());
+        //笔触类型
         if(choice01.getValue().equals("Shape")) {
             currentShape.setStrokeType(StrokeType.OUTSIDE);
         }
+        //圆端
         if(roundangle.isSelected())
             currentShape.setStrokeLineCap(StrokeLineCap.ROUND);
+        //圆接
         currentShape.setStrokeLineJoin(StrokeLineJoin.ROUND);
+        initShape();
+    }
+
+    private void setText(){
+        Text t = (Text) currentShape;
+        t.setFont(new Font(currentFont,slider1.getValue()));
+        //t.setStyle("-fx-text-fill: green; -fx-font-size: 16px;");
+        t.setStroke(currentColor);
+        t.setFill(currentColor);
+        initShape();
+    }
+    private void initShape() {
+//        //初始化笔刷：
+//        //设置填充
+//        if(autofilling.isSelected())
+//            currentShape.setFill(currentColor);
+//        //笔触颜色
+//        currentShape.setStroke(currentColor);
+//        //笔触大小
+//        if(!choice01.getValue().equals("Text"))
+//            currentShape.setStrokeWidth(slider1.getValue());
+//        //笔触类型
+//        if(choice01.getValue().equals("Shape")) {
+//            currentShape.setStrokeType(StrokeType.OUTSIDE);
+//        }
+//        //圆端
+//        if(roundangle.isSelected())
+//            currentShape.setStrokeLineCap(StrokeLineCap.ROUND);
+//        //圆接
+//        currentShape.setStrokeLineJoin(StrokeLineJoin.ROUND);
 
 
         //添加到容器
         drawpane.getChildren().add(currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动
         Translate translate = new Translate(0, 0);
-        currentShape.getTransforms().add(translate);
+        Rotate rotate = new Rotate();
+        currentShape.getTransforms().addAll(translate,rotate);
         Shape s = currentShape;
+        
         currentShape.addEventFilter(MouseEvent.MOUSE_DRAGGED, e2 -> {
             s.requestFocus();
             if (e2.getButton() == MouseButton.MIDDLE) {
@@ -436,7 +476,11 @@ public class Controller implements Initializable {
 
                 //记录坐标
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
+                System.out.println("e.scene:x"+e2.getSceneX()+"e.scene:y"+e2.getSceneY()+
+                        "   s.x:"+(e2.getX())+"s.y:"+(e2.getY()));
 //                System.out.println(choice01.getValue());
+            }else if(e2.getButton()==MouseButton.SECONDARY){
+                double angle1 = Math.toDegrees(Math.atan2(e2.getSceneY()-s.getLayoutY(), e2.getSceneX())-s.getLayoutX());
             }
         });
 
@@ -451,8 +495,11 @@ public class Controller implements Initializable {
                     drawpane.getChildren().remove(clearObject);
                 }
             }
-            if (e2.getButton() == MouseButton.MIDDLE) {
+            else if (e2.getButton() == MouseButton.MIDDLE) {
                 //必须用getScene坐标，如果用Shape自己的坐标会有卡顿的情况
+                lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
+            }
+            else if(e2.getButton()==MouseButton.SECONDARY){
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
         });

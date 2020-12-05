@@ -54,14 +54,14 @@
                 <Cursor fx:constant="DEFAULT" />
             </cursor>
          <children>
-            <TextArea fx:id="textarea1" layoutX="72.0" layoutY="31.0" prefHeight="293.0" prefWidth="371.0" />
+            <TextArea fx:id="textarea1" layoutX="72.0" layoutY="31.0" prefHeight="129.0" prefWidth="406.0" />
          </children>
         </AnchorPane>
         <ToolBar layoutX="234.0" AnchorPane.topAnchor="0.0">
             <items>
             <RadioButton fx:id="autofilling" mnemonicParsing="false" selected="false" text="Auto-Filling" />
             <RadioButton fx:id="roundangle" mnemonicParsing="false" text="RoundAngle" />
-            <ChoiceBox fx:id="fontchoice" value="System Regular" />
+            <ChoiceBox fx:id="fontchoice" onAction="#updateFont" value="System Regular" />
             </items>
         </ToolBar>
         <MenuBar layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
