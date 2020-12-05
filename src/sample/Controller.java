@@ -456,7 +456,7 @@ public class Controller implements Initializable {
         drawpane.getChildren().add(currentShape);
         //同时设置一个动作过滤器，和一个转换器来实现移动
         Translate translate = new Translate(0, 0);
-        Rotate rotate = new Rotate();
+        Rotate rotate = new Rotate(0);
         currentShape.getTransforms().addAll(translate,rotate);
         Shape s = currentShape;
         
@@ -476,11 +476,38 @@ public class Controller implements Initializable {
 
                 //记录坐标
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
-                System.out.println("e.scene:x"+e2.getSceneX()+"e.scene:y"+e2.getSceneY()+
-                        "   s.x:"+(e2.getX())+"s.y:"+(e2.getY()));
 //                System.out.println(choice01.getValue());
             }else if(e2.getButton()==MouseButton.SECONDARY){
-                double angle1 = Math.toDegrees(Math.atan2(e2.getSceneY()-s.getLayoutY(), e2.getSceneX())-s.getLayoutX());
+                String sClass = mainpane.getScene().focusOwnerProperty().getValue().getClass().toString();
+                Point2D pivotP;
+                switch(sClass){
+                    case "class javafx.scene.shape.Rectangle":{
+                        Rectangle rect = (Rectangle)s;
+                        pivotP = new Point2D(rect.getX()+rect.getWidth()/2,rect.getY()+ rect.getHeight()/2);
+                        break;
+                    }
+                    case "class javafx.scene.shape.Ellipse":{
+                        Ellipse oval = (Ellipse)s;
+                        pivotP = new Point2D(oval.getCenterX(),oval.getCenterY());
+                        break;
+                    }
+                    case "class javafx.scene.text.Text":{
+                        Text text = (Text)s;
+                        pivotP = new Point2D(text.getX(), text.getY());
+                        break;
+                    }
+                    default:pivotP = new Point2D(0,0);
+                }
+                //TODO
+                double angle1 = Math.toDegrees(Math.atan2(e2.getY()-pivotP.getY(),e2.getX()-pivotP.getX()));
+                double angle2 = Math.toDegrees(Math.atan2(lastP.getY()-pivotP.getY(),lastP.getY()-pivotP.getX()));
+                double newAngle = rotate.getAngle()+(angle1-angle2);
+                while(newAngle<0)newAngle+=360;
+                while(newAngle>360)newAngle-=360;
+                rotate.setAngle(newAngle);
+                rotate.setPivotX(pivotP.getX());
+                rotate.setPivotY(pivotP.getY());
+                lastP = new Point2D(e2.getX(), e2.getY());
             }
         });
 
@@ -488,7 +515,8 @@ public class Controller implements Initializable {
             //这里不能用currentShape来获取焦点
 
             s.requestFocus();
-            System.out.println(mainpane.getScene().focusOwnerProperty().toString());
+            System.out.println(mainpane.getScene().focusOwnerProperty().getValue().getClass().toString());
+
             if (e2.getButton() == MouseButton.PRIMARY) {
                 if (choice01.getValue().equals("Clear")) {//equals 这种bugs 竟然一时没看出来。。。
                     Shape clearObject = (Shape) e2.getSource();
@@ -500,7 +528,7 @@ public class Controller implements Initializable {
                 lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
             }
             else if(e2.getButton()==MouseButton.SECONDARY){
-                lastP = new Point2D(e2.getSceneX(), e2.getSceneY());
+                lastP = new Point2D(e2.getX(), e2.getY());
             }
         });
     }
