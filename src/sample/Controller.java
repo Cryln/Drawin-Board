@@ -68,18 +68,18 @@ public class Controller implements Initializable {
     @FXML
     //一系列控件交互函数
     public void printHello(){
-        System.out.println("hello");
+        //System.out.println("hello");
     }
 
     public void switchSlider1Lock(){
-//        if(choice02.getValue().equals("Oval"))
-//        {
-//            slider1.setValue(1);
-//            slider1.setDisable(true);
-//        }else slider1.setDisable(false);
+        if(choice02.getValue().equals("Oval"))
+        {
+            slider1.setValue(1);
+            slider1.setDisable(true);
+        }else slider1.setDisable(false);
     }
     public void penChoise() {
-        System.out.println(choice01.getValue()+"****"+choice02.getValue());
+        //System.out.println(choice01.getValue()+"****"+choice02.getValue());
         if(choice01.getValue().equals("Shape")){
             choice02.setVisible(true);
             choice02.setValue("Oval");
@@ -105,7 +105,7 @@ public class Controller implements Initializable {
             choice02.setVisible(false);
             roundangle.setDisable(false);
         }
-        System.out.println("now:"+choice01.getValue()+"****"+choice02.getValue());
+        //System.out.println("now:"+choice01.getValue()+"****"+choice02.getValue());
     }
     public void updateColor(){
         currentColor = new Color(color01.getValue().getRed(),color01.getValue().getGreen(),
@@ -291,7 +291,7 @@ public class Controller implements Initializable {
         switch ((String) choice02.getValue()) {
             case "Oval":
             case "Circle":
-                currentShape = new Ellipse(x,y,0,0);
+                currentShape = new Ellipse(x,y,1,1);
                 break;
             case "Rectangle":
                 currentShape = new Rectangle(x,y,0,0);
@@ -499,6 +499,12 @@ public class Controller implements Initializable {
                                 text.getY());
                         break;
                     }
+//                    case "class javafx.scene.shape.Path":{
+//                        Path path = (Path)s;
+//                        pivotP = new Point2D(path.get,
+//                                text.getY());
+//                        break;
+//                    }
                     default:pivotP = new Point2D(0,0);
                 }
                 //TODO
@@ -530,7 +536,7 @@ public class Controller implements Initializable {
             //这里不能用currentShape来获取焦点
 
             s.requestFocus();
-            System.out.println(mainpane.getScene().focusOwnerProperty().getValue().getClass().toString());
+            //System.out.println(mainpane.getScene().focusOwnerProperty().getValue().getClass().toString());
 
             if (e2.getButton() == MouseButton.PRIMARY) {
                 if (choice01.getValue().equals("Clear")) {//equals 这种bugs 竟然一时没看出来。。。
