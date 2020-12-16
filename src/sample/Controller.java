@@ -19,6 +19,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
@@ -115,16 +117,43 @@ public class Controller implements Initializable {
         currentFont = fontchoice.getValue().toString();
     }
     public void openfile() {
-        File file = new FileChooser().showOpenDialog(mainpane.getScene().getWindow());
-        ImageView imageView = new ImageView(new Image(file.toURI().toString()));
-        imageView.setFitHeight(drawpane.getHeight());
-        imageView.setFitWidth(drawpane.getWidth());
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                new FileChooser.ExtensionFilter("GIF", "*.gif"),
+                new FileChooser.ExtensionFilter("BMP", "*.bmp"),
+                new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
+        fileChooser.setTitle("Open Resource File");
+        File file = fileChooser.showOpenDialog(mainpane.getScene().getWindow());
+        Image image = new Image(file.toURI().toString());
+        ImageView imageView = new ImageView(image);
+//        imageView.setScaleX(drawpane.getWidth()/imageView.getFitWidth());
+//        imageView.setScaleY(drawpane.getHeight()/imageView.getFitHeight());
+        double iw = image.getWidth();
+        double ih = image.getHeight();
+
+        //自适应大小，并居中
+        if((iw/ih)>(drawpane.getWidth()/drawpane.getHeight())){
+            imageView.setFitWidth(drawpane.getWidth()*0.8);
+            imageView.setFitHeight(ih*(drawpane.getWidth()/iw)*0.8);
+        }else{
+            imageView.setFitHeight(drawpane.getHeight()*0.8);
+            imageView.setFitWidth(iw*(drawpane.getHeight()/ih)*0.8);
+        }
+        imageView.setX((drawpane.getWidth()-imageView.getFitWidth())/2);
+        imageView.setY((drawpane.getHeight()- imageView.getFitHeight())/2);
+        imageView.setDisable(true);
+        imageView.setFocusTraversable(false);
         drawpane.getChildren().add(imageView);
     }
     public void savefile() throws IOException {
-        //我猜有这么个方法，果然有。。。
-        File dir = new DirectoryChooser().showDialog(mainpane.getScene().getWindow());
-        File file = new File(dir.getPath()+"myimg.png");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Image");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PNG", "*.png"));
+                //我猜有这么个方法，果然有。。。
+        File file = fileChooser.showSaveDialog(mainpane.getScene().getWindow());
         WritableImage image = drawpane.snapshot(new SnapshotParameters(), null);
 //        ImageView imageView = new ImageView(image);
 //        Image image1 = new Image(image);
